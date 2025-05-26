@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق إدارة المشروعات</title>
-  <style>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق إدارة المشروعات</title>
+    <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -181,72 +181,78 @@
       background: #e74c3c;
     }
   </style>
-</head>
-<body>
-  <div class="container">
-    <h1>تطبيق إدارة المشروعات</h1>
-    <button class="view-projects-btn" onclick="showProjects()">عرض المشروعات</button>
-    <div id="home" class="input-section">
-      <h2>إضافة مشروع جديد</h2>
-      <div class="form-group">
-        <label>معرف المشروع (ID)</label>
-        <input type="text" id="projectId" placeholder="أدخل معرف المشروع">
+  </head>
+  <body>
+    <div class="container">
+      <h1>تطبيق إدارة المشروعات</h1>
+      <button class="view-projects-btn" onclick="showProjects()">عرض
+        المشروعات</button>
+      <div id="home" class="input-section">
+        <h2>إضافة مشروع جديد</h2>
+        <div class="form-group">
+          <label>معرف المشروع (ID)</label>
+          <input type="text" id="projectId" placeholder="أدخل معرف المشروع">
+        </div>
+        <div class="form-group">
+          <label>حساب العميل</label>
+          <input type="text" id="clientAccount" placeholder="أدخل حساب العميل">
+        </div>
+        <div class="form-group">
+          <label>اسم المشروع</label>
+          <input type="text" id="name" placeholder="أدخل اسم المشروع">
+        </div>
+        <div class="form-group">
+          <label>تاريخ التعاقد</label>
+          <input type="date" id="contractDate"
+            onchange="setDefaultWarrantyEndDate()">
+        </div>
+        <div class="form-group">
+          <label>تاريخ انتهاء الضمان</label>
+          <input type="date" id="warrantyEndDate">
+        </div>
+        <div class="form-group">
+          <label>عدد المكونات</label>
+          <input type="number" id="componentsCount"
+            placeholder="أدخل عدد المكونات">
+        </div>
+        <div class="form-group">
+          <label>صورة عرض السعر</label>
+          <input type="file" id="priceOfferImage" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label>ملاحظات</label>
+          <textarea id="notes" placeholder="أدخل ملاحظاتك" rows="4"></textarea>
+        </div>
+        <button onclick="addProject()">إضافة المشروع</button>
+        <button onclick="saveEditedProject()"
+          style="margin-top: 1rem; background: #27ae60;">حفظ التعديلات</button>
+        <div id="successMessage" class="success-message">تم إضافة المشروع
+          بنجاح!</div>
       </div>
-      <div class="form-group">
-        <label>حساب العميل</label>
-        <input type="text" id="clientAccount" placeholder="أدخل حساب العميل">
-      </div>
-      <div class="form-group">
-        <label>اسم المشروع</label>
-        <input type="text" id="name" placeholder="أدخل اسم المشروع">
-      </div>
-      <div class="form-group">
-        <label>تاريخ التعاقد</label>
-        <input type="date" id="contractDate" onchange="setDefaultWarrantyEndDate()">
-      </div>
-      <div class="form-group">
-        <label>تاريخ انتهاء الضمان</label>
-        <input type="date" id="warrantyEndDate">
-      </div>
-      <div class="form-group">
-        <label>عدد المكونات</label>
-        <input type="number" id="componentsCount" placeholder="أدخل عدد المكونات">
-      </div>
-      <div class="form-group">
-        <label>صورة عرض السعر</label>
-        <input type="file" id="priceOfferImage" accept="image/*">
-      </div>
-      <div class="form-group">
-        <label>ملاحظات</label>
-        <textarea id="notes" placeholder="أدخل ملاحظاتك" rows="4"></textarea>
-      </div>
-      <button onclick="addProject()">إضافة المشروع</button>
-      <button onclick="saveEditedProject()" style="margin-top: 1rem; background: #27ae60;">حفظ التعديلات</button>
-      <div id="successMessage" class="success-message">تم إضافة المشروع بنجاح!</div>
-    </div>
 
-    <div id="projects" class="projects-section" style="display: none;">
-      <div id="nav-buttons">
-        <button onclick="showHome()">العودة إلى الإضافة</button>
-        <div>
-          <input type="text" id="search" placeholder="ابحث باسم المشروع" onkeyup="searchProjects()">
-          <button onclick="exportProjects()">تصدير المشروعات</button>
+      <div id="projects" class="projects-section" style="display: none;">
+        <div id="nav-buttons">
+          <button onclick="showHome()">العودة إلى الإضافة</button>
+          <div>
+            <input type="text" id="search" placeholder="ابحث باسم المشروع"
+              onkeyup="searchProjects()">
+            <button onclick="exportProjects()">تصدير المشروعات</button>
+          </div>
+        </div>
+        <h2>قائمة المشروعات</h2>
+        <div id="projectsGrid" class="card-grid"></div>
+      </div>
+
+      <!-- Modal for large image -->
+      <div id="imageModal" class="modal">
+        <div class="modal-content">
+          <span class="close-modal" onclick="closeModal()">×</span>
+          <img id="largeImage" src alt="صورة عرض السعر">
         </div>
       </div>
-      <h2>قائمة المشروعات</h2>
-      <div id="projectsGrid" class="card-grid"></div>
     </div>
 
-    <!-- Modal for large image -->
-    <div id="imageModal" class="modal">
-      <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">×</span>
-        <img id="largeImage" src="" alt="صورة عرض السعر">
-      </div>
-    </div>
-  </div>
-
-  <script>
+    <script>
   const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw3MJztuQjtelPYHKrOr-U8vyU8-tAOLGoNeJ-suUpm4cgGibKkvkuj_BjZl4-yyGkGsQ/exec";
     let projects = [];
     let currentEditId = null;
@@ -549,5 +555,5 @@
       if (e.target === this) closeModal();
     });
   </script>
-</body>
+  </body>
 </html>
