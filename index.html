@@ -180,13 +180,12 @@
     .warranty-expired {
       background: #e74c3c;
     }
-  </style>
+    </style>
   </head>
   <body>
     <div class="container">
       <h1>تطبيق إدارة المشروعات</h1>
-      <button class="view-projects-btn" onclick="showProjects()">عرض
-        المشروعات</button>
+      <button class="view-projects-btn" onclick="showProjects()">عرض المشروعات</button>
       <div id="home" class="input-section">
         <h2>إضافة مشروع جديد</h2>
         <div class="form-group">
@@ -203,8 +202,7 @@
         </div>
         <div class="form-group">
           <label>تاريخ التعاقد</label>
-          <input type="date" id="contractDate"
-            onchange="setDefaultWarrantyEndDate()">
+          <input type="date" id="contractDate" onchange="setDefaultWarrantyEndDate()">
         </div>
         <div class="form-group">
           <label>تاريخ انتهاء الضمان</label>
@@ -212,8 +210,7 @@
         </div>
         <div class="form-group">
           <label>عدد المكونات</label>
-          <input type="number" id="componentsCount"
-            placeholder="أدخل عدد المكونات">
+          <input type="number" id="componentsCount" placeholder="أدخل عدد المكونات">
         </div>
         <div class="form-group">
           <label>صورة عرض السعر</label>
@@ -224,18 +221,15 @@
           <textarea id="notes" placeholder="أدخل ملاحظاتك" rows="4"></textarea>
         </div>
         <button onclick="addProject()">إضافة المشروع</button>
-        <button onclick="saveEditedProject()"
-          style="margin-top: 1rem; background: #27ae60;">حفظ التعديلات</button>
-        <div id="successMessage" class="success-message">تم إضافة المشروع
-          بنجاح!</div>
+        <button id="saveEditedProject" onclick="saveEditedProject()" style="margin-top: 1rem; background: #27ae60; display: none;">حفظ التعديلات</button>
+        <div id="successMessage" class="success-message">تم إضافة المشروع بنجاح!</div>
       </div>
 
       <div id="projects" class="projects-section" style="display: none;">
         <div id="nav-buttons">
           <button onclick="showHome()">العودة إلى الإضافة</button>
           <div>
-            <input type="text" id="search" placeholder="ابحث باسم المشروع"
-              onkeyup="searchProjects()">
+            <input type="text" id="search" placeholder="ابحث باسم المشروع" onkeyup="searchProjects()">
             <button onclick="exportProjects()">تصدير المشروعات</button>
           </div>
         </div>
@@ -247,169 +241,57 @@
       <div id="imageModal" class="modal">
         <div class="modal-content">
           <span class="close-modal" onclick="closeModal()">×</span>
-          <img id="largeImage" src alt="صورة عرض السعر">
+          <img id="largeImage" src="" alt="صورة عرض السعر">
         </div>
       </div>
     </div>
 
     <script>
-  const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw3MJztuQjtelPYHKrOr-U8vyU8-tAOLGoNeJ-suUpm4cgGibKkvkuj_BjZl4-yyGkGsQ/exec";
-    let projects = [];
-    let currentEditId = null;
+      const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynh0eW8AXC-sHTVcatwTrJ8lmX5QLh_rcGSXtBgycqpvUR3HbM7DDDKJsWqmOdnrFPoQ/exec";
+      let projects = [];
+      let currentEditId = null;
 
-    // جلب المشروعات عند تحميل الصفحة
-    fetchProjects();
+      // جلب المشروعات عند تحميل الصفحة
+      fetchProjects();
 
-    function fetchProjects() {
-      fetch(GOOGLE_SHEET_WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "get" }),
-        headers: { "Content-Type": "application/json" }
-      })
-        .then(response => response.json())
-        .then(data => {
-          projects = data;
-          updateProjectsDisplay();
-        })
-        .catch(error => console.error("Error fetching projects:", error));
-    }
-
-    function saveProjects() {
-      updateProjectsDisplay();
-    }
-
-    function setDefaultWarrantyEndDate() {
-      const contractDateInput = document.getElementById('contractDate').value;
-      if (contractDateInput) {
-        const contractDate = new Date(contractDateInput);
-        const warrantyEndDate = new Date(contractDate);
-        warrantyEndDate.setFullYear(contractDate.getFullYear() + 1); // إضافة سنة
-        document.getElementById('warrantyEndDate').value = warrantyEndDate.toISOString().split('T')[0];
-      }
-    }
-
-    function addProject() {
-      const projectId = document.getElementById('projectId').value.trim();
-      const clientAccount = document.getElementById('clientAccount').value.trim();
-      const name = document.getElementById('name').value.trim();
-      const contractDate = document.getElementById('contractDate').value;
-      const warrantyEndDate = document.getElementById('warrantyEndDate').value;
-      const componentsCount = document.getElementById('componentsCount').value;
-      const priceOfferImage = document.getElementById('priceOfferImage').files[0];
-      const notes = document.getElementById('notes').value;
-
-      if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
-        alert('يرجى ملء جميع الحقول الأساسية');
-        return;
-      }
-
-      const priceOfferImageUrl = priceOfferImage ? URL.createObjectURL(priceOfferImage) : '';
-      const newProject = {
-        id: Date.now(),
-        projectId,
-        clientAccount,
-        name,
-        contractDate,
-        warrantyEndDate,
-        componentsCount,
-        priceOfferImage: priceOfferImageUrl,
-        notes
-      };
-
-      fetch(GOOGLE_SHEET_WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "add", project: newProject }),
-        headers: { "Content-Type": "application/json" }
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === "success") {
-            projects.push(newProject);
-            saveProjects();
-            document.getElementById('successMessage').style.display = 'block';
-            setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
-            clearForm();
-            fetchProjects();
-          } else {
-            alert("فشل في إضافة المشروع");
-          }
-        })
-        .catch(error => console.error("Error adding project:", error));
-    }
-
-    function updateProjectsDisplay() {
-      const grid = document.getElementById('projectsGrid');
-      grid.innerHTML = '';
-      projects.forEach(project => {
-        const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
-        const card = document.createElement('div');
-        card.className = 'project-card';
-        card.innerHTML = `
-          <h3>
-            ${project.name}
-            <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
-          </h3>
-          <p>معرف المشروع: ${project.projectId}</p>
-          <p>حساب العميل: ${project.clientAccount}</p>
-          <p>تاريخ التعاقد: ${project.contractDate}</p>
-          <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
-          <p>عدد المكونات: ${project.componentsCount}</p>
-          <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
-          ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
-          <div>
-            <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
-            <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function checkWarrantyStatus(warrantyEndDate) {
-      const today = new Date();
-      const endDate = new Date(warrantyEndDate);
-      return endDate >= today;
-    }
-
-    function deleteProject(id) {
-      if (confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+      function fetchProjects() {
         fetch(GOOGLE_SHEET_WEB_APP_URL, {
           method: "POST",
-          body: JSON.stringify({ action: "delete", id: id }),
-          headers: { "Content-Type": "application/json" }
+          body: JSON.stringify({ action: "get" }),
+          headers: { "Content-Type": "application/json" },
+          mode: "cors",
+          credentials: "omit"
         })
           .then(response => response.json())
           .then(data => {
-            if (data.status === "success") {
-              projects = projects.filter(project => project.id !== id);
-              saveProjects();
-              fetchProjects();
-            } else {
-              alert("فشل في حذف المشروع");
-            }
+            projects = data;
+            updateProjectsDisplay();
           })
-          .catch(error => console.error("Error deleting project:", error));
+          .catch(error => console.error("Error fetching projects:", error));
       }
-    }
 
-    function editProject(id) {
-      currentEditId = id;
-      const project = projects.find(p => p.id === id);
-      document.getElementById('projectId').value = project.projectId;
-      document.getElementById('clientAccount').value = project.clientAccount;
-      document.getElementById('name').value = project.name;
-      document.getElementById('contractDate').value = project.contractDate;
-      document.getElementById('warrantyEndDate').value = project.warrantyEndDate;
-      document.getElementById('componentsCount').value = project.componentsCount;
-      document.getElementById('notes').value = project.notes;
-      showHome();
-      document.getElementById('successMessage').textContent = 'يمكنك تعديل المشروع الآن!';
-      document.getElementById('successMessage').style.display = 'block';
-      setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
-    }
+      function saveProjects() {
+        updateProjectsDisplay();
+      }
 
-    function saveEditedProject() {
-      if (currentEditId) {
+      function setDefaultWarrantyEndDate() {
+        const contractDateInput = document.getElementById('contractDate').value;
+        if (contractDateInput) {
+          const contractDate = new Date(contractDateInput);
+          const warrantyEndDate = new Date(contractDate);
+          warrantyEndDate.setFullYear(contractDate.getFullYear() + 1);
+          const warrantyEndDateStr = warrantyEndDate.toISOString().split('T')[0];
+          document.getElementById('warrantyEndDate').value = warrantyEndDateStr;
+
+          // تحقق من التاريخ
+          if (new Date(warrantyEndDateStr) <= contractDate) {
+            alert('تاريخ انتهاء الضمان يجب أن يكون بعد تاريخ التعاقد!');
+            document.getElementById('warrantyEndDate').value = '';
+          }
+        }
+      }
+
+      async function addProject() {
         const projectId = document.getElementById('projectId').value.trim();
         const clientAccount = document.getElementById('clientAccount').value.trim();
         const name = document.getElementById('name').value.trim();
@@ -424,9 +306,23 @@
           return;
         }
 
-        const priceOfferImageUrl = priceOfferImage ? URL.createObjectURL(priceOfferImage) : projects.find(p => p.id === currentEditId).priceOfferImage;
-        const updatedProject = {
-          id: currentEditId,
+        let priceOfferImageUrl = '';
+        if (priceOfferImage) {
+          const formData = new FormData();
+          formData.append('file', priceOfferImage);
+          formData.append('action', 'uploadImage');
+          const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+            method: "POST",
+            body: formData,
+            mode: "cors",
+            credentials: "omit"
+          });
+          const data = await response.json();
+          priceOfferImageUrl = data.url || '';
+        }
+
+        const newProject = {
+          id: Date.now(),
           projectId,
           clientAccount,
           name,
@@ -439,121 +335,265 @@
 
         fetch(GOOGLE_SHEET_WEB_APP_URL, {
           method: "POST",
-          body: JSON.stringify({ action: "update", project: updatedProject }),
-          headers: { "Content-Type": "application/json" }
+          body: JSON.stringify({ action: "add", project: newProject }),
+          headers: { "Content-Type": "application/json" },
+          mode: "cors",
+          credentials: "omit"
         })
           .then(response => response.json())
           .then(data => {
             if (data.status === "success") {
-              const projectIndex = projects.findIndex(p => p.id === currentEditId);
-              projects[projectIndex] = updatedProject;
+              projects.push(newProject);
               saveProjects();
-              currentEditId = null;
-              document.getElementById('successMessage').textContent = 'تم تعديل المشروع بنجاح!';
               document.getElementById('successMessage').style.display = 'block';
               setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
               clearForm();
               fetchProjects();
             } else {
-              alert("فشل في تعديل المشروع");
+              alert("فشل في إضافة المشروع");
             }
           })
-          .catch(error => console.error("Error updating project:", error));
+          .catch(error => console.error("Error adding project:", error));
       }
-    }
 
-    function clearForm() {
-      document.getElementById('projectId').value = '';
-      document.getElementById('clientAccount').value = '';
-      document.getElementById('name').value = '';
-      document.getElementById('contractDate').value = '';
-      document.getElementById('warrantyEndDate').value = '';
-      document.getElementById('componentsCount').value = '';
-      document.getElementById('priceOfferImage').value = '';
-      document.getElementById('notes').value = '';
-    }
+      function updateProjectsDisplay() {
+        const grid = document.getElementById('projectsGrid');
+        grid.innerHTML = '';
+        projects.forEach(project => {
+          const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
+          const card = document.createElement('div');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <h3>
+              ${project.name}
+              <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
+            </h3>
+            <p>معرف المشروع: ${project.projectId}</p>
+            <p>حساب العميل: ${project.clientAccount}</p>
+            <p>تاريخ التعاقد: ${project.contractDate}</p>
+            <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
+            <p>عدد المكونات: ${project.componentsCount}</p>
+            <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
+            ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
+            <div>
+              <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
+              <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
 
-    function searchProjects() {
-      const searchTerm = document.getElementById('search').value.toLowerCase();
-      const filteredProjects = projects.filter(project => project.name.toLowerCase().includes(searchTerm));
-      const grid = document.getElementById('projectsGrid');
-      grid.innerHTML = '';
-      filteredProjects.forEach(project => {
-        const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
-        const card = document.createElement('div');
-        card.className = 'project-card';
-        card.innerHTML = `
-          <h3>
-            ${project.name}
-            <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
-          </h3>
-          <p>معرف المشروع: ${project.projectId}</p>
-          <p>حساب العميل: ${project.clientAccount}</p>
-          <p>تاريخ التعاقد: ${project.contractDate}</p>
-          <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
-          <p>عدد المكونات: ${project.componentsCount}</p>
-          <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
-          ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
-          <div>
-            <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
-            <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
+      function checkWarrantyStatus(warrantyEndDate) {
+        const today = new Date();
+        const endDate = new Date(warrantyEndDate);
+        return endDate >= today;
+      }
 
-    function exportProjects() {
-      const dataStr = JSON.stringify(projects, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'projects.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-
-    function showHome() {
-      document.getElementById('home').style.display = 'block';
-      document.getElementById('projects').style.display = 'none';
-      if (currentEditId) {
-        if (confirm('هل تريد حفظ التعديلات قبل الخروج؟')) {
-          saveEditedProject();
-        } else {
-          currentEditId = null;
-          clearForm();
+      function deleteProject(id) {
+        if (confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+          fetch(GOOGLE_SHEET_WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "delete", id: id }),
+            headers: { "Content-Type": "application/json" },
+            mode: "cors",
+            credentials: "omit"
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === "success") {
+                projects = projects.filter(project => project.id !== id);
+                saveProjects();
+                fetchProjects();
+              } else {
+                alert("فشل في حذف المشروع");
+              }
+            })
+            .catch(error => console.error("Error deleting project:", error));
         }
       }
-    }
 
-    function showProjects() {
-      document.getElementById('home').style.display = 'none';
-      document.getElementById('projects').style.display = 'block';
-      fetchProjects();
-    }
+      function editProject(id) {
+        currentEditId = id;
+        const project = projects.find(p => p.id === id);
+        document.getElementById('projectId').value = project.projectId;
+        document.getElementById('clientAccount').value = project.clientAccount;
+        document.getElementById('name').value = project.name;
+        document.getElementById('contractDate').value = project.contractDate;
+        document.getElementById('warrantyEndDate').value = project.warrantyEndDate;
+        document.getElementById('componentsCount').value = project.componentsCount;
+        document.getElementById('notes').value = project.notes;
+        showHome();
+        document.getElementById('saveEditedProject').style.display = 'block';
+        document.getElementById('successMessage').textContent = 'يمكنك تعديل المشروع الآن!';
+        document.getElementById('successMessage').style.display = 'block';
+        setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
+      }
 
-    function showLargeImage(imageUrl) {
-      const modal = document.getElementById('imageModal');
-      const largeImage = document.getElementById('largeImage');
-      largeImage.src = imageUrl;
-      modal.style.display = 'flex';
-    }
+      async function saveEditedProject() {
+        if (currentEditId) {
+          const projectId = document.getElementById('projectId').value.trim();
+          const clientAccount = document.getElementById('clientAccount').value.trim();
+          const name = document.getElementById('name').value.trim();
+          const contractDate = document.getElementById('contractDate').value;
+          const warrantyEndDate = document.getElementById('warrantyEndDate').value;
+          const componentsCount = document.getElementById('componentsCount').value;
+          const priceOfferImage = document.getElementById('priceOfferImage').files[0];
+          const notes = document.getElementById('notes').value;
 
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      modal.style.display = 'none';
-    }
+          if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
+            alert('يرجى ملء جميع الحقول الأساسية');
+            return;
+          }
 
-    // Initial setup
-    showHome();
+          let priceOfferImageUrl = projects.find(p => p.id === currentEditId).priceOfferImage;
+          if (priceOfferImage) {
+            const formData = new FormData();
+            formData.append('file', priceOfferImage);
+            formData.append('action', 'uploadImage');
+            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+              method: "POST",
+              body: formData,
+              mode: "cors",
+              credentials: "omit"
+            });
+            const data = await response.json();
+            priceOfferImageUrl = data.url || '';
+          }
 
-    // إضافة حدث إغلاق النافذة المنبثقة عند النقر خارج الصورة
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-  </script>
+          const updatedProject = {
+            id: currentEditId,
+            projectId,
+            clientAccount,
+            name,
+            contractDate,
+            warrantyEndDate,
+            componentsCount,
+            priceOfferImage: priceOfferImageUrl,
+            notes
+          };
+
+          fetch(GOOGLE_SHEET_WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "update", project: updatedProject }),
+            headers: { "Content-Type": "application/json" },
+            mode: "cors",
+            credentials: "omit"
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === "success") {
+                const projectIndex = projects.findIndex(p => p.id === currentEditId);
+                projects[projectIndex] = updatedProject;
+                saveProjects();
+                currentEditId = null;
+                document.getElementById('successMessage').textContent = 'تم تعديل المشروع بنجاح!';
+                document.getElementById('successMessage').style.display = 'block';
+                setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
+                clearForm();
+                fetchProjects();
+                document.getElementById('saveEditedProject').style.display = 'none';
+              } else {
+                alert("فشل في تعديل المشروع");
+              }
+            })
+            .catch(error => console.error("Error updating project:", error));
+        }
+      }
+
+      function clearForm() {
+        document.getElementById('projectId').value = '';
+        document.getElementById('clientAccount').value = '';
+        document.getElementById('name').value = '';
+        document.getElementById('contractDate').value = '';
+        document.getElementById('warrantyEndDate').value = '';
+        document.getElementById('componentsCount').value = '';
+        document.getElementById('priceOfferImage').value = '';
+        document.getElementById('notes').value = '';
+        document.getElementById('saveEditedProject').style.display = 'none';
+      }
+
+      function searchProjects() {
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        const filteredProjects = projects.filter(project => project.name.toLowerCase().includes(searchTerm));
+        const grid = document.getElementById('projectsGrid');
+        grid.innerHTML = '';
+        filteredProjects.forEach(project => {
+          const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
+          const card = document.createElement('div');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <h3>
+              ${project.name}
+              <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
+            </h3>
+            <p>معرف المشروع: ${project.projectId}</p>
+            <p>حساب العميل: ${project.clientAccount}</p>
+            <p>تاريخ التعاقد: ${project.contractDate}</p>
+            <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
+            <p>عدد المكونات: ${project.componentsCount}</p>
+            <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
+            ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
+            <div>
+              <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
+              <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      function exportProjects() {
+        const dataStr = JSON.stringify(projects, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'projects.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function showHome() {
+        document.getElementById('home').style.display = 'block';
+        document.getElementById('projects').style.display = 'none';
+        if (currentEditId) {
+          if (confirm('هل تريد حفظ التعديلات قبل الخروج؟')) {
+            saveEditedProject();
+          } else {
+            currentEditId = null;
+            clearForm();
+          }
+        }
+      }
+
+      function showProjects() {
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('projects').style.display = 'block';
+        fetchProjects();
+      }
+
+      function showLargeImage(imageUrl) {
+        const modal = document.getElementById('imageModal');
+        const largeImage = document.getElementById('largeImage');
+        largeImage.src = imageUrl;
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+      }
+
+      // Initial setup
+      showHome();
+
+      // إضافة حدث إغلاق النافذة المنبثقة عند النقر خارج الصورة
+      document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+      });
+    </script>
   </body>
 </html>
