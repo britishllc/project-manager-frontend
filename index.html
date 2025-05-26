@@ -267,7 +267,7 @@
       async function fetchProjects() {
         try {
           // استبدل الرابط ده برابط ملف الـ JSON على GitHub
-          const response = await fetch('data/projectsData.json');
+          const response = await fetch('projectsData.json');
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
