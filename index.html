@@ -1,545 +1,589 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق إدارة المشروعات</title>
-    <style>
-      /* نفس الـ CSS الأصلي بدون تغيير */
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      h1 {
-        text-align: center;
-        color: #2c3e50;
-        font-size: 2.5rem;
-        margin-bottom: 2rem;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-      }
-      .input-section, .projects-section {
-        background: #fff;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-      }
-      .form-group {
-        margin-bottom: 1rem;
-      }
-      label {
-        display: block;
-        font-weight: 500;
-        color: #34495e;
-        margin-bottom: 0.5rem;
-      }
-      input, textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-sizing: border-box;
-        font-size: 1rem;
-      }
-      button {
-        background: #3498db;
-        color: #fff;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.3s;
-      }
-      button:hover {
-        background: #2980b9;
-      }
-      .success-message {
-        padding: 0.75rem;
-        background: #2ecc71;
-        color: #fff;
-        border-radius: 8px;
-        text-align: center;
-        margin-top: 1rem;
-        display: none;
-      }
-      .error-message {
-        padding: 0.75rem;
-        background: #e74c3c;
-        color: #fff;
-        border-radius: 8px;
-        text-align: center;
-        margin-top: 1rem;
-        display: none;
-      }
-      .card-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-      }
-      .project-card {
-        background: #fff;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        position: relative;
-      }
-      .project-card h3 {
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-      }
-      .project-card p {
-        color: #7f8c8d;
-        margin: 0.25rem 0;
-      }
-      .action-btn {
-        background: #e74c3c;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-      }
-      .action-btn:hover {
-        background: #c0392b;
-      }
-      .edit-btn {
-        background: #f1c40f;
-        margin-left: 0.5rem;
-      }
-      .edit-btn:hover {
-        background: #d4ac0d;
-      }
-      .images-container img {
-        width: 6rem;
-        height: 6rem;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-left: 0.5rem;
-        cursor: pointer;
-      }
-      #nav-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-      }
-      #search {
-        padding: 0.75rem;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        width: 70%;
-      }
-      .view-projects-btn {
-        background: #8e44ad;
-        margin: 1rem 0;
-      }
-      .view-projects-btn:hover {
-        background: #732d91;
-      }
-      .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-      .modal-content {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        max-width: 90%;
-        max-height: 90%;
-        overflow: auto;
-      }
-      .modal-content img {
-        max-width: 100%;
-        max-height: 80vh;
-      }
-      .close-modal {
-        position: absolute;
-        top: 10px;
-        right: 20px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #333;
-      }
-      .warranty-indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-left: 8px;
-        display: inline-block;
-      }
-      .warranty-active {
-        background: #2ecc71;
-      }
-      .warranty-expired {
-        background: #e74c3c;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>تطبيق إدارة المشروعات</h1>
-      <button class="view-projects-btn" onclick="showProjects()">عرض المشروعات</button>
-      <div id="home" class="input-section">
-        <h2>إضافة مشروع جديد</h2>
-        <div class="form-group">
-          <label>معرف المشروع (ID)</label>
-          <input type="text" id="projectId" placeholder="أدخل معرف المشروع">
-        </div>
-        <div class="form-group">
-          <label>حساب العميل</label>
-          <input type="text" id="clientAccount" placeholder="أدخل حساب العميل">
-        </div>
-        <div class="form-group">
-          <label>اسم المشروع</label>
-          <input type="text" id="name" placeholder="أدخل اسم المشروع">
-        </div>
-        <div class="form-group">
-          <label>تاريخ التعاقد</label>
-          <input type="date" id="contractDate" onchange="setDefaultWarrantyEndDate()">
-        </div>
-        <div class="form-group">
-          <label>تاريخ انتهاء الضمان</label>
-          <input type="date" id="warrantyEndDate">
-        </div>
-        <div class="form-group">
-          <label>عدد المكونات</label>
-          <input type="number" id="componentsCount" placeholder="أدخل عدد المكونات">
-        </div>
-        <div class="form-group">
-          <label>صورة عرض السعر</label>
-          <input type="text" id="priceOfferImage" placeholder="أدخل رابط الصورة">
-        </div>
-        <div class="form-group">
-          <label>ملاحظات</label>
-          <textarea id="notes" placeholder="أدخل ملاحظاتك" rows="4"></textarea>
-        </div>
-        <button onclick="addProject()">إضافة المشروع</button>
-        <button id="saveEditedProject" onclick="saveEditedProject()" style="margin-top: 1rem; background: #27ae60; display: none;">حفظ التعديلات</button>
-        <div id="successMessage" class="success-message">تم إضافة المشروع بنجاح!</div>
-        <div id="errorMessage" class="error-message"></div>
-      </div>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق إدارة المشروعات</title>
+    <style>
+      /* نفس الـ CSS الأصلي بدون تغيير */
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .input-section, .projects-section {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+      }
+      input, textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
+      button {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      button:hover {
+        background: #2980b9;
+      }
+      .success-message {
+        padding: 0.75rem;
+        background: #2ecc71;
+        color: #fff;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 1rem;
+        display: none;
+      }
+      .error-message {
+        padding: 0.75rem;
+        background: #e74c3c;
+        color: #fff;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 1rem;
+        display: none;
+      }
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+      .project-card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      .project-card h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+      .project-card p {
+        color: #7f8c8d;
+        margin: 0.25rem 0;
+      }
+      .action-btn {
+        background: #e74c3c;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      .action-btn:hover {
+        background: #c0392b;
+      }
+      .edit-btn {
+        background: #f1c40f;
+        margin-left: 0.5rem;
+      }
+      .edit-btn:hover {
+        background: #d4ac0d;
+      }
+      .images-container img {
+        width: 6rem;
+        height: 6rem;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-left: 0.5rem;
+        cursor: pointer;
+      }
+      #nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+      #search {
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        width: 70%;
+      }
+      .view-projects-btn {
+        background: #8e44ad;
+        margin: 1rem 0;
+      }
+      .view-projects-btn:hover {
+        background: #732d91;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 90%;
+        max-height: 90%;
+        overflow: auto;
+      }
+      .modal-content img {
+        max-width: 100%;
+        max-height: 80vh;
+      }
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+      }
+      .warranty-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-left: 8px;
+        display: inline-block;
+      }
+      .warranty-active {
+        background: #2ecc71;
+      }
+      .warranty-expired {
+        background: #e74c3c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>تطبيق إدارة المشروعات</h1>
+      <button class="view-projects-btn" onclick="showProjects()">عرض المشروعات</button>
+      <div id="home" class="input-section">
+        <h2>إضافة مشروع جديد</h2>
+        <div class="form-group">
+          <label>معرف المشروع (ID)</label>
+          <input type="text" id="projectId" placeholder="أدخل معرف المشروع">
+        </div>
+        <div class="form-group">
+          <label>حساب العميل</label>
+          <input type="text" id="clientAccount" placeholder="أدخل حساب العميل">
+        </div>
+        <div class="form-group">
+          <label>اسم المشروع</label>
+          <input type="text" id="name" placeholder="أدخل اسم المشروع">
+        </div>
+        <div class="form-group">
+          <label>تاريخ التعاقد</label>
+          <input type="date" id="contractDate" onchange="setDefaultWarrantyEndDate()">
+        </div>
+        <div class="form-group">
+          <label>تاريخ انتهاء الضمان</label>
+          <input type="date" id="warrantyEndDate">
+        </div>
+        <div class="form-group">
+          <label>عدد المكونات</label>
+          <input type="number" id="componentsCount" placeholder="أدخل عدد المكونات">
+        </div>
+        <div class="form-group">
+          <label>صورة عرض السعر</label>
+          <input type="text" id="priceOfferImage" placeholder="أدخل رابط الصورة">
+        </div>
+        <div class="form-group">
+          <label>ملاحظات</label>
+          <textarea id="notes" placeholder="أدخل ملاحظاتك" rows="4"></textarea>
+        </div>
+        <button onclick="addProject()">إضافة المشروع</button>
+        <button id="saveEditedProject" onclick="saveEditedProject()" style="margin-top: 1rem; background: #27ae60; display: none;">حفظ التعديلات</button>
+        <div id="successMessage" class="success-message">تم إضافة المشروع بنجاح!</div>
+        <div id="errorMessage" class="error-message"></div>
+      </div>
 
-      <div id="projects" class="projects-section" style="display: none;">
-        <div id="nav-buttons">
-          <button onclick="showHome()">العودة إلى الإضافة</button>
-          <div>
-            <input type="text" id="search" placeholder="ابحث باسم المشروع" onkeyup="searchProjects()">
-            <button onclick="exportProjects()">تصدير المشروعات</button>
-          </div>
-        </div>
-        <h2>قائمة المشروعات</h2>
-        <div id="projectsGrid" class="card-grid"></div>
-      </div>
+      <div id="projects" class="projects-section" style="display: none;">
+        <div id="nav-buttons">
+          <button onclick="showHome()">العودة إلى الإضافة</button>
+          <div>
+            <input type="text" id="search" placeholder="ابحث باسم المشروع" onkeyup="searchProjects()">
+                        <button onclick="exportProjects()">تصدير المشروعات</button>
+          </div>
+        </div>
+        <h2>قائمة المشروعات</h2>
+        <div id="projectsGrid" class="card-grid"></div>
+      </div>
 
-      <!-- Modal for large image -->
-      <div id="imageModal" class="modal">
-        <div class="modal-content">
-          <span class="close-modal" onclick="closeModal()">×</span>
-          <img id="largeImage" src="" alt="صورة عرض السعر">
-        </div>
-      </div>
-    </div>
+            <div id="imageModal" class="modal">
+        <div class="modal-content">
+          <span class="close-modal" onclick="closeModal()">×</span>
+          <img id="largeImage" src="" alt="صورة عرض السعر">
+        </div>
+      </div>
+    </div>
 
-    <script>
-      let projects = [];
-      let currentEditId = null;
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-      // جلب المشروعات من ملف JSON عند تحميل الصفحة
-      fetchProjects();
+      // بيانات اتصال Supabase
+      const SUPABASE_URL = 'https://ffjyhslddjweolgnvcne.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmanloc2xkZGp3ZW9sZ252Y25lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyNjExNzksImV4cCI6MjA2MzgzNzE3OX0.IDTYvWstrTxe2aSMDlTc63svPC-Be8acoyrdsSpwSaA';
 
-      async function fetchProjects() {
-        try {
-          // استبدل الرابط ده برابط ملف الـ JSON على GitHub
-          const response = await fetch('projectsData.json');
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          projects = await response.json();
-          updateProjectsDisplay();
-          showError('');
-        } catch (error) {
-          console.error("Error fetching projects:", error);
-          showError(`فشل في جلب المشروعات: ${error.message}`);
-        }
-      }
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      function saveProjects() {
-        updateProjectsDisplay();
-        // ملاحظة: مشروعك على GitHub Pages ما بيدعموش الكتابة مباشرة،
-        // فالتعديلات هتكون مؤقتة لحد ما تعمل تحديث لملف الـ JSON يدويًا
-        console.log("التعديلات مؤقتة. ارفع ملف projectsData.json محدث على GitHub لتخزين التغييرات.");
-      }
+      let projects = [];
+      let currentEditId = null;
 
-      function setDefaultWarrantyEndDate() {
-        const contractDateInput = document.getElementById('contractDate').value;
-        if (contractDateInput) {
-          const contractDate = new Date(contractDateInput);
-          const warrantyEndDate = new Date(contractDate);
-          warrantyEndDate.setFullYear(contractDate.getFullYear() + 1);
-          const warrantyEndDateStr = warrantyEndDate.toISOString().split('T')[0];
-          document.getElementById('warrantyEndDate').value = warrantyEndDateStr;
+      // جلب المشروعات من Supabase عند تحميل الصفحة
+      fetchProjects();
 
-          if (new Date(warrantyEndDateStr) <= contractDate) {
-            alert('تاريخ انتهاء الضمان يجب أن يكون بعد تاريخ التعاقد!');
-            document.getElementById('warrantyEndDate').value = '';
-          }
-        }
-      }
+      async function fetchProjects() {
+        try {
+          let { data, error } = await supabase
+            .from('PMmanager') // اسم الجدول في Supabase
+            .select('*'); // جلب كل الأعمدة
 
-      async function addProject() {
-        const projectId = document.getElementById('projectId').value.trim();
-        const clientAccount = document.getElementById('clientAccount').value.trim();
-        const name = document.getElementById('name').value.trim();
-        const contractDate = document.getElementById('contractDate').value;
-        const warrantyEndDate = document.getElementById('warrantyEndDate').value;
-        const componentsCount = document.getElementById('componentsCount').value;
-        const priceOfferImage = document.getElementById('priceOfferImage').value.trim();
-        const notes = document.getElementById('notes').value;
+          if (error) {
+            throw error;
+          }
+          projects = data; // تخزين البيانات التي تم جلبها من Supabase
+          updateProjectsDisplay();
+          showError(''); // مسح أي أخطاء سابقة
+        } catch (error) {
+          console.error("Error fetching projects from Supabase:", error);
+          showError(`فشل في جلب المشروعات من Supabase: ${error.message}`);
+        }
+      }
 
-        if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
-          showError('يرجى ملء جميع الحقول الأساسية');
-          return;
-        }
+      // دالة saveProjects لم تعد ضرورية بنفس الشكل، لأننا سنتعامل مع Supabase مباشرة
+      // ولكن سنتركها كتذكير لتحديث العرض بعد كل عملية CRUD
+      function saveProjects() {
+        updateProjectsDisplay();
+        // يمكن إضافة رسالة تأكيد هنا إذا لزم الأمر
+      }
 
-        const newProject = {
-          id: Date.now(),
-          projectId,
-          clientAccount,
-          name,
-          contractDate,
-          warrantyEndDate,
-          componentsCount,
-          priceOfferImage,
-          notes,
-          warrantyStatus: checkWarrantyStatus(warrantyEndDate) ? "Active" : "Expired"
-        };
+      function setDefaultWarrantyEndDate() {
+        const contractDateInput = document.getElementById('contractDate').value;
+        if (contractDateInput) {
+          const contractDate = new Date(contractDateInput);
+          const warrantyEndDate = new Date(contractDate);
+          warrantyEndDate.setFullYear(contractDate.getFullYear() + 1);
+          const warrantyEndDateStr = warrantyEndDate.toISOString().split('T')[0];
+          document.getElementById('warrantyEndDate').value = warrantyEndDateStr;
 
-        projects.push(newProject);
-        saveProjects();
-        showSuccess('تم إضافة المشروع بنجاح!');
-        clearForm();
-      }
+          if (new Date(warrantyEndDateStr) <= contractDate) {
+            alert('تاريخ انتهاء الضمان يجب أن يكون بعد تاريخ التعاقد!');
+            document.getElementById('warrantyEndDate').value = '';
+          }
+        }
+      }
 
-      function updateProjectsDisplay() {
-        const grid = document.getElementById('projectsGrid');
-        grid.innerHTML = '';
-        projects.forEach(project => {
-          const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
-          const card = document.createElement('div');
-          card.className = 'project-card';
-          card.innerHTML = `
-            <h3>
-              ${project.name}
-              <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
-            </h3>
-            <p>معرف المشروع: ${project.projectId}</p>
-            <p>حساب العميل: ${project.clientAccount}</p>
-            <p>تاريخ التعاقد: ${project.contractDate}</p>
-            <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
-            <p>عدد المكونات: ${project.componentsCount}</p>
-            <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
-            ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
-            <div>
-              <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
-              <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
-      }
+      async function addProject() {
+        const projectId = document.getElementById('projectId').value.trim();
+        const clientAccount = document.getElementById('clientAccount').value.trim();
+        const name = document.getElementById('name').value.trim();
+        const contractDate = document.getElementById('contractDate').value;
+        const warrantyEndDate = document.getElementById('warrantyEndDate').value;
+        const componentsCount = document.getElementById('componentsCount').value;
+        const priceOfferImage = document.getElementById('priceOfferImage').value.trim();
+        const notes = document.getElementById('notes').value;
 
-      function checkWarrantyStatus(warrantyEndDate) {
-        const today = new Date();
-        const endDate = new Date(warrantyEndDate);
-        return endDate >= today;
-      }
+        if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
+          showError('يرجى ملء جميع الحقول الأساسية');
+          return;
+        }
 
-      function deleteProject(id) {
-        if (confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
-          projects = projects.filter(project => project.id !== id);
-          saveProjects();
-          showSuccess('تم حذف المشروع بنجاح!');
-        }
-      }
+        // بناء الكائن الذي سيتم إرساله إلى Supabase
+        const newProjectData = {
+          // في Supabase، الـ `id` عادة ما يتم توليده تلقائياً كـ `uuid`
+          // إذا كنت تستخدم id يدوياً في كولوم آخر، استخدم `projectId` هنا
+          projectId: projectId, // هذا هو 'معرف المشروع' من الحقول
+          clientAccount: clientAccount,
+          name: name, // اسم المشروع
+          contractDate: contractDate,
+          warrantyEndDate: warrantyEndDate,
+          componentsCount: componentsCount,
+          priceOfferImage: priceOfferImage,
+          notes: notes,
+          // هذا الحقل يمكن أن يتم حسابه عند الجلب أو في Database Trigger
+          // لتبسيط الكود، يمكننا إضافة قيمته هنا إذا كان هناك عمود في Supabase
+          warrantyStatus: checkWarrantyStatus(warrantyEndDate) ? "Active" : "Expired"
+        };
 
-      function editProject(id) {
-        currentEditId = id;
-        const project = projects.find(p => p.id === id);
-        document.getElementById('projectId').value = project.projectId;
-        document.getElementById('clientAccount').value = project.clientAccount;
-        document.getElementById('name').value = project.name;
-        document.getElementById('contractDate').value = project.contractDate;
-        document.getElementById('warrantyEndDate').value = project.warrantyEndDate;
-        document.getElementById('componentsCount').value = project.componentsCount;
-        document.getElementById('priceOfferImage').value = project.priceOfferImage;
-        document.getElementById('notes').value = project.notes;
-        showHome();
-        document.getElementById('saveEditedProject').style.display = 'block';
-        showSuccess('يمكنك تعديل المشروع الآن!');
-      }
+        try {
+          const { data, error } = await supabase
+            .from('PMmanager') // اسم الجدول
+            .insert([newProjectData]); // إدراج البيانات
 
-      function saveEditedProject() {
-        if (currentEditId) {
-          const projectId = document.getElementById('projectId').value.trim();
-          const clientAccount = document.getElementById('clientAccount').value.trim();
-          const name = document.getElementById('name').value.trim();
-          const contractDate = document.getElementById('contractDate').value;
-          const warrantyEndDate = document.getElementById('warrantyEndDate').value;
-          const componentsCount = document.getElementById('componentsCount').value;
-          const priceOfferImage = document.getElementById('priceOfferImage').value.trim();
-          const notes = document.getElementById('notes').value;
+          if (error) {
+            throw error;
+          }
 
-          if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
-            showError('يرجى ملء جميع الحقول الأساسية');
-            return;
-          }
+          // إذا تم الإدراج بنجاح، أعد جلب البيانات لتحديث العرض
+          await fetchProjects();
+          showSuccess('تم إضافة المشروع بنجاح!');
+          clearForm();
+        } catch (error) {
+          console.error("Error adding project to Supabase:", error);
+          showError(`فشل في إضافة المشروع: ${error.message}`);
+        }
+      }
 
-          const updatedProject = {
-            id: currentEditId,
-            projectId,
-            clientAccount,
-            name,
-            contractDate,
-            warrantyEndDate,
-            componentsCount,
-            priceOfferImage,
-            notes,
-            warrantyStatus: checkWarrantyStatus(warrantyEndDate) ? "Active" : "Expired"
-          };
+      function updateProjectsDisplay() {
+        const grid = document.getElementById('projectsGrid');
+        grid.innerHTML = '';
+        projects.forEach(project => {
+          // Supabase 'id' هو المفتاح الأساسي
+          const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
+          const card = document.createElement('div');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <h3>
+              ${project.name}
+              <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
+            </h3>
+            <p>معرف المشروع: ${project.projectId}</p>
+            <p>حساب العميل: ${project.clientAccount}</p>
+            <p>تاريخ التعاقد: ${project.contractDate}</p>
+            <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
+            <p>عدد المكونات: ${project.componentsCount}</p>
+            <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
+            ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
+            <div>
+              <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
+              <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
 
-          const projectIndex = projects.findIndex(p => p.id === currentEditId);
-          projects[projectIndex] = updatedProject;
-          saveProjects();
-          currentEditId = null;
-          showSuccess('تم تعديل المشروع بنجاح!');
-          clearForm();
-          document.getElementById('saveEditedProject').style.display = 'none';
-        }
-      }
+      function checkWarrantyStatus(warrantyEndDate) {
+        const today = new Date();
+        const endDate = new Date(warrantyEndDate);
+        return endDate >= today;
+      }
 
-      function showSuccess(message) {
-        const successMessage = document.getElementById('successMessage');
-        successMessage.textContent = message;
-        successMessage.style.display = 'block';
-        setTimeout(() => successMessage.style.display = 'none', 3000);
-      }
+      async function deleteProject(id) {
+        if (confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+          try {
+            const { error } = await supabase
+              .from('PMmanager')
+              .delete()
+              .eq('id', id); // حذف بناءً على الـ 'id' الأساسي في Supabase
 
-      function showError(message) {
-        const errorMessage = document.getElementById('errorMessage');
-        errorMessage.textContent = message;
-        errorMessage.style.display = message ? 'block' : 'none';
-      }
+            if (error) {
+              throw error;
+            }
+            await fetchProjects(); // أعد جلب البيانات لتحديث العرض بعد الحذف
+            showSuccess('تم حذف المشروع بنجاح!');
+          } catch (error) {
+            console.error("Error deleting project from Supabase:", error);
+            showError(`فشل في حذف المشروع: ${error.message}`);
+          }
+        }
+      }
 
-      function clearForm() {
-        document.getElementById('projectId').value = '';
-        document.getElementById('clientAccount').value = '';
-        document.getElementById('name').value = '';
-        document.getElementById('contractDate').value = '';
-        document.getElementById('warrantyEndDate').value = '';
-        document.getElementById('componentsCount').value = '';
-        document.getElementById('priceOfferImage').value = '';
-        document.getElementById('notes').value = '';
-        document.getElementById('saveEditedProject').style.display = 'none';
-      }
+      function editProject(id) {
+        currentEditId = id;
+        const project = projects.find(p => p.id === id); // البحث بالـ 'id' الأساسي من Supabase
+        if (project) {
+          document.getElementById('projectId').value = project.projectId;
+          document.getElementById('clientAccount').value = project.clientAccount;
+          document.getElementById('name').value = project.name;
+          document.getElementById('contractDate').value = project.contractDate;
+          document.getElementById('warrantyEndDate').value = project.warrantyEndDate;
+          document.getElementById('componentsCount').value = project.componentsCount;
+          document.getElementById('priceOfferImage').value = project.priceOfferImage;
+          document.getElementById('notes').value = project.notes;
+          showHome(); // العودة إلى صفحة الإضافة
+          document.getElementById('saveEditedProject').style.display = 'block';
+          showSuccess('يمكنك تعديل المشروع الآن!');
+        } else {
+          showError('المشروع غير موجود للتعديل.');
+        }
+      }
 
-      function searchProjects() {
-        const searchTerm = document.getElementById('search').value.toLowerCase();
-        const filteredProjects = projects.filter(project => project.name.toLowerCase().includes(searchTerm));
-        const grid = document.getElementById('projectsGrid');
-        grid.innerHTML = '';
-        filteredProjects.forEach(project => {
-          const isUnderWarranty = checkWarrantyStatus(project.warrantyEndDate);
-          const card = document.createElement('div');
-          card.className = 'project-card';
-          card.innerHTML = `
-            <h3>
-              ${project.name}
-              <span class="warranty-indicator ${isUnderWarranty ? 'warranty-active' : 'warranty-expired'}"></span>
-            </h3>
-            <p>معرف المشروع: ${project.projectId}</p>
-            <p>حساب العميل: ${project.clientAccount}</p>
-            <p>تاريخ التعاقد: ${project.contractDate}</p>
-            <p>تاريخ انتهاء الضمان: ${project.warrantyEndDate}</p>
-            <p>عدد المكونات: ${project.componentsCount}</p>
-            <p>ملاحظات: ${project.notes || 'لا توجد ملاحظات'}</p>
-            ${project.priceOfferImage ? `<div class="images-container"><img src="${project.priceOfferImage}" alt="عرض سعر" onclick="showLargeImage('${project.priceOfferImage}')"></div>` : ''}
-            <div>
-              <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">حذف</button>
-              <button class="action-btn edit-btn" onclick="editProject(${project.id})">تعديل</button>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
-      }
+      async function saveEditedProject() {
+        if (currentEditId) {
+          const projectId = document.getElementById('projectId').value.trim();
+          const clientAccount = document.getElementById('clientAccount').value.trim();
+          const name = document.getElementById('name').value.trim();
+          const contractDate = document.getElementById('contractDate').value;
+          const warrantyEndDate = document.getElementById('warrantyEndDate').value;
+          const componentsCount = document.getElementById('componentsCount').value;
+          const priceOfferImage = document.getElementById('priceOfferImage').value.trim();
+          const notes = document.getElementById('notes').value;
 
-      function exportProjects() {
-        const dataStr = JSON.stringify(projects, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'projects.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
+          if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
+            showError('يرجى ملء جميع الحقول الأساسية');
+            return;
+          }
 
-      function showHome() {
-        document.getElementById('home').style.display = 'block';
-        document.getElementById('projects').style.display = 'none';
-        if (currentEditId) {
-          if (confirm('هل تريد حفظ التعديلات قبل الخروج؟')) {
-            saveEditedProject();
-          } else {
-            currentEditId = null;
-            clearForm();
-          }
-        }
-      }
+          const updatedProjectData = {
+            projectId: projectId,
+            clientAccount: clientAccount,
+            name: name,
+            contractDate: contractDate,
+            warrantyEndDate: warrantyEndDate,
+            componentsCount: componentsCount,
+            priceOfferImage: priceOfferImage,
+            notes: notes,
+            warrantyStatus: checkWarrantyStatus(warrantyEndDate) ? "Active" : "Expired"
+          };
 
-      function showProjects() {
-        document.getElementById('home').style.display = 'none';
-        document.getElementById('projects').style.display = 'block';
-        fetchProjects();
-      }
+          try {
+            const { data, error } = await supabase
+              .from('PMmanager')
+              .update(updatedProjectData)
+              .eq('id', currentEditId); // التحديث بناءً على الـ 'id' الأساسي في Supabase
 
-      function showLargeImage(imageUrl) {
-        const modal = document.getElementById('imageModal');
-        const largeImage = document.getElementById('largeImage');
-        largeImage.src = imageUrl;
-        modal.style.display = 'flex';
-      }
+            if (error) {
+              throw error;
+            }
+            currentEditId = null; // مسح معرف التعديل بعد الحفظ
+            await fetchProjects(); // أعد جلب البيانات لتحديث العرض بعد التعديل
+            showSuccess('تم تعديل المشروع بنجاح!');
+            clearForm();
+            document.getElementById('saveEditedProject').style.display = 'none';
+          } catch (error) {
+            console.error("Error updating project in Supabase:", error);
+            showError(`فشل في تعديل المشروع: ${error.message}`);
+          }
+        }
+      }
 
-      function closeModal() {
-        const modal = document.getElementById('imageModal');
-        modal.style.display = 'none';
-      }
+      function showSuccess(message) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        successMessage.style.display = 'block';
+        setTimeout(() => successMessage.style.display = 'none', 3000);
+      }
 
-      // Initial setup
-      showHome();
+      function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.style.display = message ? 'block' : 'none';
+      }
 
-      // إضافة حدث إغلاق النافذة المنبثقة عند النقر خارج الصورة
-      document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-      });
-    </script>
-  </body>  
+      function clearForm() {
+        document.getElementById('projectId').value = '';
+        document.getElementById('clientAccount').value = '';
+        document.getElementById('name').value = '';
+        document.getElementById('contractDate').value = '';
+        document.getElementById('warrantyEndDate').value = '';
+        document.getElementById('componentsCount').value = '';
+        document.getElementById('priceOfferImage').value = '';
+        document.getElementById('notes').value = '';
+        document.getElementById('saveEditedProject').style.display = 'none';
+      }
+
+      async function searchProjects() {
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        try {
+          let { data, error } = await supabase
+            .from('PMmanager')
+            .select('*')
+            .ilike('name', `%${searchTerm}%`); // البحث عن اسم المشروع (غير حساس لحالة الأحرف)
+
+          if (error) {
+            throw error;
+          }
+          projects = data; // تحديث قائمة المشاريع بالنتائج المفلترة
+          updateProjectsDisplay(); // إعادة عرض المشاريع
+          showError('');
+        } catch (error) {
+          console.error("Error searching projects:", error);
+          showError(`فشل في البحث عن المشروعات: ${error.message}`);
+        }
+      }
+
+      function exportProjects() {
+        const dataStr = JSON.stringify(projects, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'projects.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function showHome() {
+        document.getElementById('home').style.display = 'block';
+        document.getElementById('projects').style.display = 'none';
+        if (currentEditId) {
+          if (confirm('هل تريد تجاهل التعديلات قبل الخروج؟')) {
+            currentEditId = null;
+            clearForm();
+          } else {
+            // If user cancels, stay on home and don't clear form
+            return;
+          }
+        }
+      }
+
+      async function showProjects() {
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('projects').style.display = 'block';
+        await fetchProjects(); // تأكد من جلب أحدث البيانات عند التبديل
+      }
+
+      function showLargeImage(imageUrl) {
+        const modal = document.getElementById('imageModal');
+        const largeImage = document.getElementById('largeImage');
+        largeImage.src = imageUrl;
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+      }
+
+      // Initial setup
+      showHome();
+
+      // إضافة حدث إغلاق النافذة المنبثقة عند النقر خارج الصورة
+      document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+      });
+    </script>
+  </body>  
 </html>
