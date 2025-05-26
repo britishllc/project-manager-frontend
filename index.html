@@ -224,7 +224,7 @@
         </div>
         <div class="form-group">
           <label>صورة عرض السعر</label>
-          <input type="file" id="priceOfferImage" accept="image/*">
+          <input type="text" id="priceOfferImage" placeholder="أدخل رابط الصورة">
         </div>
         <div class="form-group">
           <label>ملاحظات</label>
@@ -258,28 +258,20 @@
     </div>
 
     <script>
-      // استخدام Proxy مؤقت لتخطي CORS
-      const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-xiG_9eK3UaGnvJbw39dr046tU4rKWu-avYgPWfDnwszVzi3vbb-k9uKM3Y4gsiWxQA/exec";
       let projects = [];
       let currentEditId = null;
 
-      // جلب المشروعات عند تحميل الصفحة
+      // جلب المشروعات من ملف JSON عند تحميل الصفحة
       fetchProjects();
 
       async function fetchProjects() {
         try {
-          const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "get" }),
-            headers: { "Content-Type": "application/json" }
-          });
-          
+          // استبدل الرابط ده برابط ملف الـ JSON على GitHub
+          const response = await fetch('data/projectsData.json');
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
-
-          const data = await response.json();
-          projects = Array.isArray(data) ? data : [];
+          projects = await response.json();
           updateProjectsDisplay();
           showError('');
         } catch (error) {
@@ -290,6 +282,9 @@
 
       function saveProjects() {
         updateProjectsDisplay();
+        // ملاحظة: مشروعك على GitHub Pages ما بيدعموش الكتابة مباشرة،
+        // فالتعديلات هتكون مؤقتة لحد ما تعمل تحديث لملف الـ JSON يدويًا
+        console.log("التعديلات مؤقتة. ارفع ملف projectsData.json محدث على GitHub لتخزين التغييرات.");
       }
 
       function setDefaultWarrantyEndDate() {
@@ -315,35 +310,12 @@
         const contractDate = document.getElementById('contractDate').value;
         const warrantyEndDate = document.getElementById('warrantyEndDate').value;
         const componentsCount = document.getElementById('componentsCount').value;
-        const priceOfferImage = document.getElementById('priceOfferImage').files[0];
+        const priceOfferImage = document.getElementById('priceOfferImage').value.trim();
         const notes = document.getElementById('notes').value;
 
         if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
           showError('يرجى ملء جميع الحقول الأساسية');
           return;
-        }
-
-        let priceOfferImageUrl = '';
-        if (priceOfferImage) {
-          const formData = new FormData();
-          formData.append('file', priceOfferImage);
-          try {
-            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-              method: "POST",
-              body: formData
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-              priceOfferImageUrl = data.url || '';
-            } else {
-              showError('فشل في رفع الصورة');
-              return;
-            }
-          } catch (error) {
-            console.error("Error uploading image:", error);
-            showError(`فشل في رفع الصورة: ${error.message}`);
-            return;
-          }
         }
 
         const newProject = {
@@ -354,30 +326,15 @@
           contractDate,
           warrantyEndDate,
           componentsCount,
-          priceOfferImage: priceOfferImageUrl,
-          notes
+          priceOfferImage,
+          notes,
+          warrantyStatus: checkWarrantyStatus(warrantyEndDate) ? "Active" : "Expired"
         };
 
-        try {
-          const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "add", project: newProject }),
-            headers: { "Content-Type": "application/json" }
-          });
-          const data = await response.json();
-          if (data.status === "success") {
-            projects.push(newProject);
-            saveProjects();
-            showSuccess('تم إضافة المشروع بنجاح!');
-            clearForm();
-            fetchProjects();
-          } else {
-            showError('فشل في إضافة المشروع');
-          }
-        } catch (error) {
-          console.error("Error adding project:", error);
-          showError(`فشل في إضافة المشروع: ${error.message}`);
-        }
+        projects.push(newProject);
+        saveProjects();
+        showSuccess('تم إضافة المشروع بنجاح!');
+        clearForm();
       }
 
       function updateProjectsDisplay() {
@@ -414,27 +371,11 @@
         return endDate >= today;
       }
 
-      async function deleteProject(id) {
+      function deleteProject(id) {
         if (confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
-          try {
-            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-              method: "POST",
-              body: JSON.stringify({ action: "delete", id: id }),
-              headers: { "Content-Type": "application/json" }
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-              projects = projects.filter(project => project.id !== id);
-              saveProjects();
-              fetchProjects();
-              showSuccess('تم حذف المشروع بنجاح!');
-            } else {
-              showError('فشل في حذف المشروع');
-            }
-          } catch (error) {
-            console.error("Error deleting project:", error);
-            showError(`فشل في حذف المشروع: ${error.message}`);
-          }
+          projects = projects.filter(project => project.id !== id);
+          saveProjects();
+          showSuccess('تم حذف المشروع بنجاح!');
         }
       }
 
@@ -447,13 +388,14 @@
         document.getElementById('contractDate').value = project.contractDate;
         document.getElementById('warrantyEndDate').value = project.warrantyEndDate;
         document.getElementById('componentsCount').value = project.componentsCount;
+        document.getElementById('priceOfferImage').value = project.priceOfferImage;
         document.getElementById('notes').value = project.notes;
         showHome();
         document.getElementById('saveEditedProject').style.display = 'block';
         showSuccess('يمكنك تعديل المشروع الآن!');
       }
 
-      async function saveEditedProject() {
+      function saveEditedProject() {
         if (currentEditId) {
           const projectId = document.getElementById('projectId').value.trim();
           const clientAccount = document.getElementById('clientAccount').value.trim();
@@ -461,35 +403,12 @@
           const contractDate = document.getElementById('contractDate').value;
           const warrantyEndDate = document.getElementById('warrantyEndDate').value;
           const componentsCount = document.getElementById('componentsCount').value;
-          const priceOfferImage = document.getElementById('priceOfferImage').files[0];
+          const priceOfferImage = document.getElementById('priceOfferImage').value.trim();
           const notes = document.getElementById('notes').value;
 
           if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
             showError('يرجى ملء جميع الحقول الأساسية');
             return;
-          }
-
-          let priceOfferImageUrl = projects.find(p => p.id === currentEditId).priceOfferImage;
-          if (priceOfferImage) {
-            const formData = new FormData();
-            formData.append('file', priceOfferImage);
-            try {
-              const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-                method: "POST",
-                body: formData
-              });
-              const data = await response.json();
-              if (data.status === "success") {
-                priceOfferImageUrl = data.url || '';
-              } else {
-                showError('فشل في رفع الصورة');
-                return;
-              }
-            } catch (error) {
-              console.error("Error uploading image:", error);
-              showError(`فشل في رفع الصورة: ${error.message}`);
-              return;
-            }
           }
 
           const updatedProject = {
@@ -500,33 +419,18 @@
             contractDate,
             warrantyEndDate,
             componentsCount,
-            priceOfferImage: priceOfferImageUrl,
-            notes
+            priceOfferImage,
+            notes,
+            warrantyStatus: checkWarrantyStatus(warrantyEndDate) ? "Active" : "Expired"
           };
 
-          try {
-            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-              method: "POST",
-              body: JSON.stringify({ action: "update", project: updatedProject }),
-              headers: { "Content-Type": "application/json" }
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-              const projectIndex = projects.findIndex(p => p.id === currentEditId);
-              projects[projectIndex] = updatedProject;
-              saveProjects();
-              currentEditId = null;
-              showSuccess('تم تعديل المشروع بنجاح!');
-              clearForm();
-              fetchProjects();
-              document.getElementById('saveEditedProject').style.display = 'none';
-            } else {
-              showError('فشل في تعديل المشروع');
-            }
-          } catch (error) {
-            console.error("Error updating project:", error);
-            showError(`فشل في تعديل المشروع: ${error.message}`);
-          }
+          const projectIndex = projects.findIndex(p => p.id === currentEditId);
+          projects[projectIndex] = updatedProject;
+          saveProjects();
+          currentEditId = null;
+          showSuccess('تم تعديل المشروع بنجاح!');
+          clearForm();
+          document.getElementById('saveEditedProject').style.display = 'none';
         }
       }
 
