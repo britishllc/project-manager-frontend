@@ -5,181 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق إدارة المشروعات</title>
     <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-    }
-    .input-section, .projects-section {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2rem;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      font-weight: 500;
-      color: #34495e;
-      margin-bottom: 0.5rem;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 1rem;
-    }
-    button {
-      background: #3498db;
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #2980b9;
-    }
-    .success-message {
-      padding: 0.75rem;
-      background: #2ecc71;
-      color: #fff;
-      border-radius: 8px;
-      text-align: center;
-      margin-top: 1rem;
-      display: none;
-    }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    .project-card {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
-    .project-card h3 {
-      color: #2c3e50;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-    }
-    .project-card p {
-      color: #7f8c8d;
-      margin: 0.25rem 0;
-    }
-    .action-btn {
-      background: #e74c3c;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    .action-btn:hover {
-      background: #c0392b;
-    }
-    .edit-btn {
-      background: #f1c40f;
-      margin-left: 0.5rem;
-    }
-    .edit-btn:hover {
-      background: #d4ac0d;
-    }
-    .images-container img {
-      width: 6rem;
-      height: 6rem;
-      object-fit: cover;
-      border-radius: 5px;
-      margin-left: 0.5rem;
-      cursor: pointer;
-    }
-    #nav-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-    }
-    #search {
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      width: 70%;
-    }
-    .view-projects-btn {
-      background: #8e44ad;
-      margin: 1rem 0;
-    }
-    .view-projects-btn:hover {
-      background: #732d91;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 90%;
-      max-height: 90%;
-      overflow: auto;
-    }
-    .modal-content img {
-      max-width: 100%;
-      max-height: 80vh;
-    }
-    .close-modal {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #333;
-    }
-    .warranty-indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-left: 8px;
-      display: inline-block;
-    }
-    .warranty-active {
-      background: #2ecc71;
-    }
-    .warranty-expired {
-      background: #e74c3c;
-    }
+      /* نفس الـ CSS الأصلي بدون تغيير */
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .input-section, .projects-section {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+      }
+      input, textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
+      button {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      button:hover {
+        background: #2980b9;
+      }
+      .success-message {
+        padding: 0.75rem;
+        background: #2ecc71;
+        color: #fff;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 1rem;
+        display: none;
+      }
+      .error-message {
+        padding: 0.75rem;
+        background: #e74c3c;
+        color: #fff;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 1rem;
+        display: none;
+      }
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+      .project-card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      .project-card h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+      .project-card p {
+        color: #7f8c8d;
+        margin: 0.25rem 0;
+      }
+      .action-btn {
+        background: #e74c3c;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      .action-btn:hover {
+        background: #c0392b;
+      }
+      .edit-btn {
+        background: #f1c40f;
+        margin-left: 0.5rem;
+      }
+      .edit-btn:hover {
+        background: #d4ac0d;
+      }
+      .images-container img {
+        width: 6rem;
+        height: 6rem;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-left: 0.5rem;
+        cursor: pointer;
+      }
+      #nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+      #search {
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        width: 70%;
+      }
+      .view-projects-btn {
+        background: #8e44ad;
+        margin: 1rem 0;
+      }
+      .view-projects-btn:hover {
+        background: #732d91;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 90%;
+        max-height: 90%;
+        overflow: auto;
+      }
+      .modal-content img {
+        max-width: 100%;
+        max-height: 80vh;
+      }
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+      }
+      .warranty-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-left: 8px;
+        display: inline-block;
+      }
+      .warranty-active {
+        background: #2ecc71;
+      }
+      .warranty-expired {
+        background: #e74c3c;
+      }
     </style>
   </head>
   <body>
@@ -223,6 +233,7 @@
         <button onclick="addProject()">إضافة المشروع</button>
         <button id="saveEditedProject" onclick="saveEditedProject()" style="margin-top: 1rem; background: #27ae60; display: none;">حفظ التعديلات</button>
         <div id="successMessage" class="success-message">تم إضافة المشروع بنجاح!</div>
+        <div id="errorMessage" class="error-message"></div>
       </div>
 
       <div id="projects" class="projects-section" style="display: none;">
@@ -247,27 +258,34 @@
     </div>
 
     <script>
-      const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynh0eW8AXC-sHTVcatwTrJ8lmX5QLh_rcGSXtBgycqpvUR3HbM7DDDKJsWqmOdnrFPoQ/exec";
+      // استخدام Proxy مؤقت لتخطي CORS
+      const GOOGLE_SHEET_WEB_APP_URL = "https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbxjjCJ5EPGavTmdNcNw5l-o20Em6LJWAghhVEdJrbR8NVzZW8-66ME7vxrmZk1L_QV3ow/exec";
       let projects = [];
       let currentEditId = null;
 
       // جلب المشروعات عند تحميل الصفحة
       fetchProjects();
 
-      function fetchProjects() {
-        fetch(GOOGLE_SHEET_WEB_APP_URL, {
-          method: "POST",
-          body: JSON.stringify({ action: "get" }),
-          headers: { "Content-Type": "application/json" },
-          mode: "cors",
-          credentials: "omit"
-        })
-          .then(response => response.json())
-          .then(data => {
-            projects = data;
-            updateProjectsDisplay();
-          })
-          .catch(error => console.error("Error fetching projects:", error));
+      async function fetchProjects() {
+        try {
+          const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "get" }),
+            headers: { "Content-Type": "application/json" }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          projects = Array.isArray(data) ? data : [];
+          updateProjectsDisplay();
+          showError('');
+        } catch (error) {
+          console.error("Error fetching projects:", error);
+          showError(`فشل في جلب المشروعات: ${error.message}`);
+        }
       }
 
       function saveProjects() {
@@ -283,7 +301,6 @@
           const warrantyEndDateStr = warrantyEndDate.toISOString().split('T')[0];
           document.getElementById('warrantyEndDate').value = warrantyEndDateStr;
 
-          // تحقق من التاريخ
           if (new Date(warrantyEndDateStr) <= contractDate) {
             alert('تاريخ انتهاء الضمان يجب أن يكون بعد تاريخ التعاقد!');
             document.getElementById('warrantyEndDate').value = '';
@@ -302,7 +319,7 @@
         const notes = document.getElementById('notes').value;
 
         if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
-          alert('يرجى ملء جميع الحقول الأساسية');
+          showError('يرجى ملء جميع الحقول الأساسية');
           return;
         }
 
@@ -310,15 +327,23 @@
         if (priceOfferImage) {
           const formData = new FormData();
           formData.append('file', priceOfferImage);
-          formData.append('action', 'uploadImage');
-          const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-            method: "POST",
-            body: formData,
-            mode: "cors",
-            credentials: "omit"
-          });
-          const data = await response.json();
-          priceOfferImageUrl = data.url || '';
+          try {
+            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+              method: "POST",
+              body: formData
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+              priceOfferImageUrl = data.url || '';
+            } else {
+              showError('فشل في رفع الصورة');
+              return;
+            }
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            showError(`فشل في رفع الصورة: ${error.message}`);
+            return;
+          }
         }
 
         const newProject = {
@@ -333,27 +358,26 @@
           notes
         };
 
-        fetch(GOOGLE_SHEET_WEB_APP_URL, {
-          method: "POST",
-          body: JSON.stringify({ action: "add", project: newProject }),
-          headers: { "Content-Type": "application/json" },
-          mode: "cors",
-          credentials: "omit"
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.status === "success") {
-              projects.push(newProject);
-              saveProjects();
-              document.getElementById('successMessage').style.display = 'block';
-              setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
-              clearForm();
-              fetchProjects();
-            } else {
-              alert("فشل في إضافة المشروع");
-            }
-          })
-          .catch(error => console.error("Error adding project:", error));
+        try {
+          const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "add", project: newProject }),
+            headers: { "Content-Type": "application/json" }
+          });
+          const data = await response.json();
+          if (data.status === "success") {
+            projects.push(newProject);
+            saveProjects();
+            showSuccess('تم إضافة المشروع بنجاح!');
+            clearForm();
+            fetchProjects();
+          } else {
+            showError('فشل في إضافة المشروع');
+          }
+        } catch (error) {
+          console.error("Error adding project:", error);
+          showError(`فشل في إضافة المشروع: ${error.message}`);
+        }
       }
 
       function updateProjectsDisplay() {
@@ -390,26 +414,27 @@
         return endDate >= today;
       }
 
-      function deleteProject(id) {
+      async function deleteProject(id) {
         if (confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
-          fetch(GOOGLE_SHEET_WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "delete", id: id }),
-            headers: { "Content-Type": "application/json" },
-            mode: "cors",
-            credentials: "omit"
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === "success") {
-                projects = projects.filter(project => project.id !== id);
-                saveProjects();
-                fetchProjects();
-              } else {
-                alert("فشل في حذف المشروع");
-              }
-            })
-            .catch(error => console.error("Error deleting project:", error));
+          try {
+            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+              method: "POST",
+              body: JSON.stringify({ action: "delete", id: id }),
+              headers: { "Content-Type": "application/json" }
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+              projects = projects.filter(project => project.id !== id);
+              saveProjects();
+              fetchProjects();
+              showSuccess('تم حذف المشروع بنجاح!');
+            } else {
+              showError('فشل في حذف المشروع');
+            }
+          } catch (error) {
+            console.error("Error deleting project:", error);
+            showError(`فشل في حذف المشروع: ${error.message}`);
+          }
         }
       }
 
@@ -425,9 +450,7 @@
         document.getElementById('notes').value = project.notes;
         showHome();
         document.getElementById('saveEditedProject').style.display = 'block';
-        document.getElementById('successMessage').textContent = 'يمكنك تعديل المشروع الآن!';
-        document.getElementById('successMessage').style.display = 'block';
-        setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
+        showSuccess('يمكنك تعديل المشروع الآن!');
       }
 
       async function saveEditedProject() {
@@ -442,7 +465,7 @@
           const notes = document.getElementById('notes').value;
 
           if (!projectId || !clientAccount || !name || !contractDate || !warrantyEndDate || !componentsCount) {
-            alert('يرجى ملء جميع الحقول الأساسية');
+            showError('يرجى ملء جميع الحقول الأساسية');
             return;
           }
 
@@ -450,15 +473,23 @@
           if (priceOfferImage) {
             const formData = new FormData();
             formData.append('file', priceOfferImage);
-            formData.append('action', 'uploadImage');
-            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-              method: "POST",
-              body: formData,
-              mode: "cors",
-              credentials: "omit"
-            });
-            const data = await response.json();
-            priceOfferImageUrl = data.url || '';
+            try {
+              const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+                method: "POST",
+                body: formData
+              });
+              const data = await response.json();
+              if (data.status === "success") {
+                priceOfferImageUrl = data.url || '';
+              } else {
+                showError('فشل في رفع الصورة');
+                return;
+              }
+            } catch (error) {
+              console.error("Error uploading image:", error);
+              showError(`فشل في رفع الصورة: ${error.message}`);
+              return;
+            }
           }
 
           const updatedProject = {
@@ -473,32 +504,43 @@
             notes
           };
 
-          fetch(GOOGLE_SHEET_WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "update", project: updatedProject }),
-            headers: { "Content-Type": "application/json" },
-            mode: "cors",
-            credentials: "omit"
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === "success") {
-                const projectIndex = projects.findIndex(p => p.id === currentEditId);
-                projects[projectIndex] = updatedProject;
-                saveProjects();
-                currentEditId = null;
-                document.getElementById('successMessage').textContent = 'تم تعديل المشروع بنجاح!';
-                document.getElementById('successMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
-                clearForm();
-                fetchProjects();
-                document.getElementById('saveEditedProject').style.display = 'none';
-              } else {
-                alert("فشل في تعديل المشروع");
-              }
-            })
-            .catch(error => console.error("Error updating project:", error));
+          try {
+            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+              method: "POST",
+              body: JSON.stringify({ action: "update", project: updatedProject }),
+              headers: { "Content-Type": "application/json" }
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+              const projectIndex = projects.findIndex(p => p.id === currentEditId);
+              projects[projectIndex] = updatedProject;
+              saveProjects();
+              currentEditId = null;
+              showSuccess('تم تعديل المشروع بنجاح!');
+              clearForm();
+              fetchProjects();
+              document.getElementById('saveEditedProject').style.display = 'none';
+            } else {
+              showError('فشل في تعديل المشروع');
+            }
+          } catch (error) {
+            console.error("Error updating project:", error);
+            showError(`فشل في تعديل المشروع: ${error.message}`);
+          }
         }
+      }
+
+      function showSuccess(message) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        successMessage.style.display = 'block';
+        setTimeout(() => successMessage.style.display = 'none', 3000);
+      }
+
+      function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.style.display = message ? 'block' : 'none';
       }
 
       function clearForm() {
@@ -595,5 +637,5 @@
         if (e.target === this) closeModal();
       });
     </script>
-  </body>
+  </body>  
 </html>
