@@ -1,1 +1,14 @@
-
+[
+  {
+    "id": 1,
+    "projectId": "P001",
+    "clientAccount": "Client1",
+    "name": "Project A",
+    "contractDate": "2024-01-01",
+    "warrantyEndDate": "2025-01-01",
+    "componentsCount": 5,
+    "priceOfferImage": "",
+    "notes": "No notes",
+    "warrantyStatus": "Active"
+  }
+]
